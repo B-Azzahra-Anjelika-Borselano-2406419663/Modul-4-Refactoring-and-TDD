@@ -1,9 +1,9 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Map;
 
 @Builder
@@ -18,7 +18,20 @@ public class Payment {
     public Payment(String id, String method, String status, Map<String, String> paymentData) {
         this.id = id;
         this.method = method;
-        this.status = status;
         this.paymentData = paymentData;
+
+        if (PaymentStatus.contains(status)) {
+            this.status = status;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public void setStatus(String status) {
+        if (PaymentStatus.contains(status)) {
+            this.status = status;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }
