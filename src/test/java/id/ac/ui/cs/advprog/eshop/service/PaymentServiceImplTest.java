@@ -158,6 +158,7 @@ public class PaymentServiceImplTest {
         );
 
         assertEquals(PaymentMethod.VOUCHER.getValue(), payment.getMethod());
+        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
     }
 
     @Test

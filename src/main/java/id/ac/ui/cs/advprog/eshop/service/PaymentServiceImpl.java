@@ -57,7 +57,9 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void updateOrderStatus(Order order, boolean valid) {
-        if (!valid) {
+        if (valid) {
+            order.setStatus(OrderStatus.SUCCESS.getValue());
+        } else {
             order.setStatus(OrderStatus.FAILED.getValue());
         }
     }
