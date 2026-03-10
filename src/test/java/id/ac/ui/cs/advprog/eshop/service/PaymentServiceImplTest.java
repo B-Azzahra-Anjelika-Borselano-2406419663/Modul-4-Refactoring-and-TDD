@@ -141,4 +141,54 @@ public class PaymentServiceImplTest {
         }
         assertEquals(2, count);
     }
+
+    @Test
+    void testValidVoucherPayment() {
+        Map<String,String> data = new HashMap<>();
+        data.put("voucherCode","ESHOP123456zar78");
+
+        doAnswer(invocation -> invocation.getArgument(0))
+                .when(paymentRepository)
+                .save(any(Payment.class));
+
+        Payment payment = paymentService.addPayment(
+                order,
+                PaymentMethod.VOUCHER.getValue(),
+                data
+        );
+
+        assertEquals(PaymentMethod.VOUCHER.getValue(), payment.getMethod());
+    }
+
+    @Test
+    void testVoucherInvalidPrefix() {
+        Map<String,String> data = new HashMap<>();
+        data.put("voucherCode","INVALID123456789");
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> paymentService.addPayment(
+                        order,
+                        PaymentMethod.VOUCHER.getValue(),
+                        data
+                )
+        );
+    }
+
+    @Test
+    void testVoucherInvalidLength() {
+        Map<String,String> data = new HashMap<>();
+        data.put("voucherCode","ESHOP123");
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> paymentService.addPayment(
+                        order,
+                        PaymentMethod.VOUCHER.getValue(),
+                        data
+                )
+        );
+    }
+
+
 }
