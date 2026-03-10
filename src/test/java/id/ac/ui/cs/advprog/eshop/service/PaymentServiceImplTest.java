@@ -165,14 +165,14 @@ public class PaymentServiceImplTest {
         Map<String,String> data = new HashMap<>();
         data.put("voucherCode","INVALID123456789");
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> paymentService.addPayment(
-                        order,
-                        PaymentMethod.VOUCHER.getValue(),
-                        data
-                )
+        Payment payment = paymentService.addPayment(
+                order,
+                PaymentMethod.VOUCHER.getValue(),
+                data
         );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
     }
 
     @Test
@@ -180,15 +180,13 @@ public class PaymentServiceImplTest {
         Map<String,String> data = new HashMap<>();
         data.put("voucherCode","ESHOP123");
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> paymentService.addPayment(
-                        order,
-                        PaymentMethod.VOUCHER.getValue(),
-                        data
-                )
+        Payment payment = paymentService.addPayment(
+                order,
+                PaymentMethod.VOUCHER.getValue(),
+                data
         );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
     }
-
-
 }
