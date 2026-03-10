@@ -190,4 +190,61 @@ public class PaymentServiceImplTest {
         assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
         assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
     }
+
+    @Test
+    void testValidCODPayment() {
+        Map<String,String> data = new HashMap<>();
+        data.put("address","Depok");
+        data.put("deliveryFee","10000");
+
+        doAnswer(invocation -> invocation.getArgument(0))
+                .when(paymentRepository)
+                .save(any(Payment.class));
+
+        paymentService.addPayment(
+                order,
+                PaymentMethod.COD.getValue(),
+                data
+        );
+
+        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
+    }
+
+    @Test
+    void testCODMissingAddressShouldRejectPayment() {
+        Map<String,String> data = new HashMap<>();
+        data.put("deliveryFee","10000");
+
+        doAnswer(invocation -> invocation.getArgument(0))
+                .when(paymentRepository)
+                .save(any(Payment.class));
+
+        Payment payment = paymentService.addPayment(
+                order,
+                PaymentMethod.COD.getValue(),
+                data
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
+    }
+
+    @Test
+    void testCODMissingDeliveryFeeShouldRejectPayment() {
+        Map<String,String> data = new HashMap<>();
+        data.put("address","Depok");
+
+        doAnswer(invocation -> invocation.getArgument(0))
+                .when(paymentRepository)
+                .save(any(Payment.class));
+
+        Payment payment = paymentService.addPayment(
+                order,
+                PaymentMethod.COD.getValue(),
+                data
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
+    }
 }
