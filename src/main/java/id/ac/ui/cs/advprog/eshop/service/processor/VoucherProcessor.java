@@ -21,12 +21,9 @@ public class VoucherProcessor implements PaymentProcessor {
         if (voucherCode == null) {
             return false;
         }
-        if (!voucherCode.startsWith(VOUCHER_PREFIX) ||
-            voucherCode.length() != VOUCHER_LENGTH ||
-            !contains8NumericalChar(voucherCode)) {
-            return false;
-        }
-        return true;
+        return voucherCode.startsWith(VOUCHER_PREFIX) &&
+                voucherCode.length() == VOUCHER_LENGTH &&
+                contains8NumericalChar(voucherCode);
     }
 
     public boolean contains8NumericalChar(String voucherCode) {
@@ -37,9 +34,6 @@ public class VoucherProcessor implements PaymentProcessor {
                 sum += 1;
             }
         }
-        if (sum == DIGIT_COUNT) {
-            return true;
-        }
-        return false;
+        return sum == DIGIT_COUNT;
     }
 }

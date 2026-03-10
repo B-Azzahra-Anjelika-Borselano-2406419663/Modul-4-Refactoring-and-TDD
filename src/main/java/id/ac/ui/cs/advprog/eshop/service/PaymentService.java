@@ -5,8 +5,8 @@ import id.ac.ui.cs.advprog.eshop.model.Payment;
 import java.util.Map;
 
 public interface PaymentService {
-    public Payment addPayment(Order order, String method, Map<String, String> paymentData);
-    public Payment setStatus(Payment payment, String status);
-    public Payment getPayment(String paymentId);
-    public Iterable<Payment> getAllPayments();
+    Payment addPayment(Order order, String method, Map<String, String> paymentData);
+    void setStatus(Payment payment, String status);
+    Payment getPayment(String paymentId);
+    Iterable<Payment> getAllPayments();
 }
