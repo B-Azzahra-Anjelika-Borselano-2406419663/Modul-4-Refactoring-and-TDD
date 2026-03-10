@@ -32,4 +32,8 @@ public class PaymentRepository {
         }
         return null;
     }
+
+    public Iterable<Payment> findAll() {
+        return paymentData;
+    }
 }
