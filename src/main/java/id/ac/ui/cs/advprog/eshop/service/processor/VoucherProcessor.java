@@ -15,23 +15,21 @@ public class VoucherProcessor implements PaymentProcessor {
     }
 
     @Override
-    public void validate(Map<String, String> paymentData) {
+    public boolean validate(Map<String, String> paymentData) {
         String voucherCode = paymentData.get("voucherCode");
 
         if (voucherCode == null) {
-            throw new IllegalArgumentException("Voucher code missing");
+            return false;
         }
-        if (!voucherCode.startsWith(VOUCHER_PREFIX)) {
-            throw new IllegalArgumentException("Voucher must start with ESHOP");
+        if (!voucherCode.startsWith(VOUCHER_PREFIX) ||
+            voucherCode.length() != VOUCHER_LENGTH ||
+            !contains8NumericalChar(voucherCode)) {
+            return false;
         }
-        if (voucherCode.length() != VOUCHER_LENGTH) {
-            throw new IllegalArgumentException("Voucher must be 16 characters");
-        }
-
-        validate8NumericalChar(voucherCode);
+        return true;
     }
 
-    public void validate8NumericalChar(String voucherCode) {
+    public boolean contains8NumericalChar(String voucherCode) {
         int sum = 0;
         for (int i = 0; i < voucherCode.length(); i++) {
             char c = voucherCode.charAt(i);
@@ -39,8 +37,9 @@ public class VoucherProcessor implements PaymentProcessor {
                 sum += 1;
             }
         }
-        if (sum != DIGIT_COUNT) {
-            throw new IllegalArgumentException("Voucher must contain 8 numerical characters");
+        if (sum == DIGIT_COUNT) {
+            return true;
         }
+        return false;
     }
 }

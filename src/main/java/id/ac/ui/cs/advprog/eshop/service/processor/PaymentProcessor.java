@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface PaymentProcessor {
     boolean supports(String method);
-    void validate(Map<String, String> paymentData);
+    boolean validate(Map<String, String> paymentData);
 }
