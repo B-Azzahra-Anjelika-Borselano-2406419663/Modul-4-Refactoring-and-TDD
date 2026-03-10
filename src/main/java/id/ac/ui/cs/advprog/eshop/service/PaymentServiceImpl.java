@@ -5,10 +5,14 @@ import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
+import id.ac.ui.cs.advprog.eshop.service.processor.CODProcessor;
+import id.ac.ui.cs.advprog.eshop.service.processor.PaymentProcessor;
+import id.ac.ui.cs.advprog.eshop.service.processor.VoucherProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,9 +23,19 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentRepository paymentRepository;
 
     private final Map<String, Order> paymentOrderMap = new HashMap<>();
+    private final List<PaymentProcessor> processors = List.of(
+            new VoucherProcessor(),
+            new CODProcessor()
+    );
 
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
+        for (PaymentProcessor processor : processors) {
+            if (processor.supports(method)) {
+                processor.validate(paymentData);
+            }
+        }
+
         Payment payment = new Payment(
                 UUID.randomUUID().toString(),
                 method,
