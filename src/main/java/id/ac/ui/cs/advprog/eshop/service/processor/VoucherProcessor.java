@@ -5,6 +5,9 @@ import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import java.util.Map;
 
 public class VoucherProcessor implements PaymentProcessor {
+    private static final String VOUCHER_PREFIX = "ESHOP";
+    private static final int VOUCHER_LENGTH = 16;
+    private static final int DIGIT_COUNT = 8;
 
     @Override
     public boolean supports(String method) {
@@ -18,10 +21,10 @@ public class VoucherProcessor implements PaymentProcessor {
         if (voucherCode == null) {
             throw new IllegalArgumentException("Voucher code missing");
         }
-        if (!voucherCode.startsWith("ESHOP")) {
+        if (!voucherCode.startsWith(VOUCHER_PREFIX)) {
             throw new IllegalArgumentException("Voucher must start with ESHOP");
         }
-        if (voucherCode.length() != 16) {
+        if (voucherCode.length() != VOUCHER_LENGTH) {
             throw new IllegalArgumentException("Voucher must be 16 characters");
         }
 
@@ -36,7 +39,7 @@ public class VoucherProcessor implements PaymentProcessor {
                 sum += 1;
             }
         }
-        if (sum != 8) {
+        if (sum != DIGIT_COUNT) {
             throw new IllegalArgumentException("Voucher must contain 8 numerical characters");
         }
     }
