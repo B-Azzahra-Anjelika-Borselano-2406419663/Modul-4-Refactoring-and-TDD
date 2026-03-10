@@ -28,25 +28,47 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
-        for (PaymentProcessor processor : processors) {
-            if (processor.supports(method)) {
-                processor.validate(paymentData);
-            }
-        }
-
-        Payment payment = new Payment(
-                UUID.randomUUID().toString(),
-                method,
-                PaymentStatus.REJECTED.getValue(),
-                paymentData
-        );
-        paymentRepository.save(payment);
-        paymentOrderMap.put(payment.getId(), order);
+        boolean valid = isPaymentValid(method, paymentData);
+        Payment payment = createPayment(method, paymentData, valid);
+        updateOrderStatus(order, valid);
+        savePayment(payment, order);
         return payment;
     }
 
+    private boolean isPaymentValid(String method, Map<String, String> paymentData) {
+        for (PaymentProcessor processor : processors) {
+            if (processor.supports(method)) {
+                return processor.validate(paymentData);
+            }
+        }
+        return false;
+    }
+
+    private Payment createPayment(String method, Map<String, String> paymentData, boolean valid) {
+        String status = valid
+                ? PaymentStatus.SUCCESS.getValue()
+                : PaymentStatus.REJECTED.getValue();
+        return new Payment(
+                UUID.randomUUID().toString(),
+                method,
+                status,
+                paymentData
+        );
+    }
+
+    private void updateOrderStatus(Order order, boolean valid) {
+        if (!valid) {
+            order.setStatus(OrderStatus.FAILED.getValue());
+        }
+    }
+
+    private void savePayment(Payment payment, Order order) {
+        paymentRepository.save(payment);
+        paymentOrderMap.put(payment.getId(), order);
+    }
+
     @Override
-    public Payment setStatus(Payment payment, String status) {
+    public void setStatus(Payment payment, String status) {
         payment.setStatus(status);
         Order order = paymentOrderMap.get(payment.getId());
 
@@ -59,7 +81,6 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
         paymentRepository.save(payment);
-        return payment;
     }
 
     @Override
